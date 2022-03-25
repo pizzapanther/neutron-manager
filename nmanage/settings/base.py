@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'encrypted_model_fields',
     'nmanage.resources',
 ]
 
@@ -78,7 +79,7 @@ WSGI_APPLICATION = 'nmanage.wsgi.application'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {}
-DATABASES['default'] = dj_database_url.config(default='postgres://localhost:5432/nmanage')
+DATABASES['default'] = dj_database_url.config(default='postgres://%2Fvar%2Frun%2Fpostgresql/nmanage')
 
 
 # Password validation
@@ -121,3 +122,5 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+FIELD_ENCRYPTION_KEY = os.environ.get('FIELD_ENCRYPTION_KEY', 'hhZl4oxyzS1Lsd1315NuSaFANIPEqQCXKpAwNXlwdKk=')

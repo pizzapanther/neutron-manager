@@ -33,7 +33,7 @@
             {% for r in page_obj %}
             <tr>
               <td>
-                {{ r.name }}
+                <a href="../info/{{ r.id }}/">{{ r.name }}</a>
               </td>
               <td>
                 {{ r.rid }}

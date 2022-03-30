@@ -56,7 +56,12 @@
     new Vue({
       el: '#app',
       vuetify: new Vuetify(),
-      mixins: MIXINS
+      mixins: MIXINS,
+      data() {
+        return {
+          drawer: true
+        };
+      }
     });
   </script>
 </body>

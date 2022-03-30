@@ -53,29 +53,40 @@ class Resource(models.Model):
 
     return ret
 
-  def execute(self, action):
-    client = boto3.client(self.rtype.lower(), **self.client_kwargs)
+  @property
+  def client(self):
+    return boto3.client(self.rtype.lower(), **self.client_kwargs)
 
+  def execute(self, action):
     method = f"{self.rtype.lower()}_{action}"
-    return getattr(self, method)(client)
+    return getattr(self, method)()
 
   def is_done(self, action):
+    response = self.client.describe_instances(InstanceIds=[self.rid])
+    state = response['Reservations'][0]['Instances'][0]['State']['Name']
+
+    if action in ['stop', 'force_stop']:
+      return state == 'stopped'
+
+    if action in ['start', 'reboot']:
+      return state == 'running'
+
     return False
 
-  def ec2_start(self, client):
-    client.start_instances(InstanceIds=[self.rid])
+  def ec2_start(self):
+    self.client.start_instances(InstanceIds=[self.rid])
     return True
 
-  def ec2_stop(self, client):
-    client.stop_instances(InstanceIds=[self.rid])
+  def ec2_stop(self):
+    self.client.stop_instances(InstanceIds=[self.rid])
     return True
 
-  def ec2_force_stop(self, client):
-    client.stop_instances(InstanceIds=[self.rid], Force=True)
+  def ec2_force_stop(self):
+    self.client.stop_instances(InstanceIds=[self.rid], Force=True)
     return True
 
-  def ec2_reboot(self, client):
-    client.reboot_instances(InstanceIds=[self.rid])
+  def ec2_reboot(self):
+    self.client.reboot_instances(InstanceIds=[self.rid])
 
 
 class Permission(models.Model):

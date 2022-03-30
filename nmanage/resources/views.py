@@ -9,6 +9,10 @@ from django.shortcuts import get_object_or_404
 from nmanage.resources.models import Resource, Permission
 
 
+def home(request):
+  return http.HttpResponseRedirect('/resources/list/')
+
+
 @login_required
 def my_resources(request):
   resources = Resource.objects.filter(permission__user=request.user).exclude(account__isnull=True)

@@ -1,4 +1,4 @@
-{% extends "nmanage_base.html" %}{% load humanize %}
+{% extends "nmanage_base.html" %}{% load humanize rtags %}
 {% block content %}
 <v-card style="margin: 10px;">
   <v-card-title>
@@ -38,10 +38,17 @@
               <td>
                 {{ r.rid }}
               </td>
-              <td>{{ r.}}</td>
+              <td>{{ r.region }}</td>
               <td>{{ r.created|naturaltime }}</td>
               <td>
-                <v-btn icon small href="/worlds/pipeline/start/?image={{ j.image|urlencode }}&pipeline={{ j.pipeline.id }}&envs={{ j.envs|default_if_none:''|urlencode }}"><v-icon class="mdi mdi-pipe"></v-icon></v-btn>
+                <v-select
+                  outlined
+                  dense
+                  :items="{{ r|actions:request.user|safe }}"
+                  label="Actions"
+                  @change="run_action({{ forloop.counter0 }}, '{{ r.id }}', '{{ r.name|escapejs }}')"
+                  v-model="resources[{{ forloop.counter0 }}]"
+                ></v-select>
               </td>
             </tr>
             {% endfor %}
@@ -57,11 +64,26 @@
 <script>
   var MIXIN = {
     data() {
-      return {page : {{ page_obj.number }}}
+      return {
+        page : {{ page_obj.number }},
+        resources: new Array({{ page_obj.object_list|length }})
+      }
     },
     watch: {
       page(to, from) {
         location.href = `./?page=${to}`
+      }
+    },
+    methods: {
+      run_action(i, rid, name) {
+        var ans = confirm(`Are you sure you with to ${this.resources[i]} ${name}`);
+        if (ans) {
+          location.href = `../action/${this.resources[i]}/${rid}/?ts=${Date.now()}`;
+        } else{
+          this.$nextTick(() => {
+            this.$set(this.resources, i, undefined);
+          });
+        }
       }
     }
   };

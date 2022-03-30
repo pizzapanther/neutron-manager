@@ -25,6 +25,8 @@ class Resource(models.Model):
   name = models.CharField(max_length=75)
   rid = models.CharField('Resource ID', max_length=75)
   rtype = models.CharField('Resource Type', max_length=10, choices=ResourceTypes.choices)
+  region = models.CharField(max_length=25, blank=True, null=True)
+  endpoint = models.CharField(max_length=128, blank=True, null=True)
 
   account = models.ForeignKey(AwsAccount, on_delete=models.SET_NULL, null=True, blank=True)
 

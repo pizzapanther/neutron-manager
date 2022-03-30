@@ -11,9 +11,8 @@ def actions(resource, user):
   if p:
     actions = []
     for a in p.actions:
-      if a == 'power':
-        actions.append("'start'")
-        actions.append("'stop'")
+      for v in Permission.ACTION_MAP[a]:
+        actions.append(f"'{v}'")
 
     return "[{}]".format(",".join(actions))
 

@@ -22,4 +22,6 @@ import nmanage.resources.views as resource_views
 urlpatterns = [
   path('admin/', admin.site.urls),
   path('resources/list/', resource_views.my_resources),
+  path('resources/action/<slug:action>/<int:rid>/', resource_views.execute_action),
+  path('resources/wait/<slug:action>/<int:rid>/', resource_views.wait_action),
 ]

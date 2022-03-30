@@ -1,8 +1,12 @@
+import time
+
+from django import http
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.template.response import TemplateResponse
+from django.shortcuts import get_object_or_404
 
-from nmanage.resources.models import Resource
+from nmanage.resources.models import Resource, Permission
 
 
 @login_required
@@ -17,3 +21,57 @@ def my_resources(request):
       'page_obj': page_obj
   }
   return TemplateResponse(request, 'resources/list.html', context)
+
+
+@login_required
+def execute_action(request, action, rid):
+  p = None
+  for key, actions in Permission.ACTION_MAP.items():
+    for a in actions:
+      if a == action:
+        p = key
+
+  if p is None:
+    raise http.Http404
+
+  permission = get_object_or_404(
+    Permission,
+    user=request.user,
+    actions__contains=[p],
+    resource__id=rid,
+  )
+  wait = permission.resource.execute(action)
+  if wait:
+    now = int(time.time() * 1000)
+    return http.HttpResponseRedirect(f'/resources/wait/{action}/{rid}/?ts={now}')
+
+  return http.HttpResponseRedirect('/resources/list/')
+
+
+@login_required
+def wait_action(request, action, rid):
+  p = None
+  for key, actions in Permission.ACTION_MAP.items():
+    for a in actions:
+      if a == action:
+        p = key
+
+  if p is None:
+    raise http.Http404
+
+  permission = get_object_or_404(
+    Permission,
+    user=request.user,
+    actions__contains=[p],
+    resource__id=rid,
+  )
+
+  if permission.resource.is_done(action):
+    return http.HttpResponseRedirect('/resources/list/')
+
+  context = {
+    'permission': permission,
+    'action': action,
+    'rid': rid,
+  }
+  return TemplateResponse(request, 'resources/wait.html', context)

@@ -1,0 +1,69 @@
+{% extends "nmanage_base.html" %}{% load humanize %}
+{% block content %}
+<v-card style="margin: 10px;">
+  <v-card-title>
+    My Resources
+  </v-card-title>
+  <v-card-text>
+    <v-container style="max-width: 100%;">
+      <v-pagination v-model="page" :length="{{ page_obj.paginator.num_pages }}"></v-pagination>
+      <v-simple-table>
+        <template v-slot:default>
+          <thead>
+            <tr>
+              <th class="text-left">
+                Resource
+              </th>
+              <th class="text-left">
+                ID
+              </th>
+              <th>
+                Region
+              </th>
+              <th class="text-left">
+                Created
+              </th>
+              <th class="text-left">
+                Actions
+              </th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in page_obj %}
+            <tr>
+              <td>
+                {{ r.name }}
+              </td>
+              <td>
+                {{ r.rid }}
+              </td>
+              <td>{{ r.}}</td>
+              <td>{{ r.created|naturaltime }}</td>
+              <td>
+                <v-btn icon small href="/worlds/pipeline/start/?image={{ j.image|urlencode }}&pipeline={{ j.pipeline.id }}&envs={{ j.envs|default_if_none:''|urlencode }}"><v-icon class="mdi mdi-pipe"></v-icon></v-btn>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </template>
+      </v-simple-table>
+      <v-pagination v-model="page" :length="{{ page_obj.paginator.num_pages }}"></v-pagination>
+    </v-container>
+  </v-card-text>
+</v-card>
+{% endblock %}
+{% block mixin %}
+<script>
+  var MIXIN = {
+    data() {
+      return {page : {{ page_obj.number }}}
+    },
+    watch: {
+      page(to, from) {
+        location.href = `./?page=${to}`
+      }
+    }
+  };
+</script>
+{% endblock %}

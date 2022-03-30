@@ -1,0 +1,63 @@
+<!DOCTYPE html>{% load static %}
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  <style>
+    .v-navigation-drawer__content .v-btn {
+      display: flex !important;
+      align-items: center;
+    }
+
+    table td {
+      font-size:  90% !important;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <v-app id="inspire">
+      <v-navigation-drawer
+        v-model="drawer"
+        mobile-breakpoint="0"
+        app
+        class="pt-4"
+        color="primary"
+        mini-variant
+      >
+        <v-btn class="d-block text-center mx-auto mb-9" fab small color="primary" href="/resources/list/">
+          <v-icon class="mdi mdi-format-list-bulleted"></v-icon>
+        </v-btn>
+      </v-navigation-drawer>
+      <v-main>
+        {% block content %}{% endblock %}
+      </v-main>
+    </v-app>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  {% block mixin %}
+  <script>
+    var MIXIN = null;
+  </script>
+  {% endblock %}
+  {% block mixins %}
+  <script>
+    var MIXINS = [];
+    if (MIXIN) {
+      MIXINS = [MIXIN]
+    }
+  </script>
+  {% endblock %}
+  <script>
+    new Vue({
+      el: '#app',
+      vuetify: new Vuetify(),
+      mixins: MIXINS
+    });
+  </script>
+</body>
+</html>

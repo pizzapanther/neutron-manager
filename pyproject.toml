@@ -29,3 +29,4 @@ build-backend = "pdm.pep517.api"
 
 [tool.pdm.scripts]
 _.env_file = ".env"
+req = "pdm export -o requirements.txt --without-hashes --prod"

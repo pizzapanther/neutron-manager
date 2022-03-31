@@ -27,8 +27,7 @@ def my_resources(request):
   return TemplateResponse(request, 'resources/list.html', context)
 
 
-@login_required
-def execute_action(request, action, rid):
+def get_perm(user, action, rid):
   p = None
   for key, actions in Permission.ACTION_MAP.items():
     for a in actions:
@@ -38,12 +37,17 @@ def execute_action(request, action, rid):
   if p is None:
     raise http.Http404
 
-  permission = get_object_or_404(
+  return get_object_or_404(
     Permission,
-    user=request.user,
+    user=user,
     actions__contains=[p],
     resource__id=rid,
   )
+
+
+@login_required
+def execute_action(request, action, rid):
+  permission = get_perm(request.user, action, rid)
   wait = permission.resource.execute(action)
   if wait:
     now = int(time.time() * 1000)
@@ -54,21 +58,7 @@ def execute_action(request, action, rid):
 
 @login_required
 def wait_action(request, action, rid):
-  p = None
-  for key, actions in Permission.ACTION_MAP.items():
-    for a in actions:
-      if a == action:
-        p = key
-
-  if p is None:
-    raise http.Http404
-
-  permission = get_object_or_404(
-    Permission,
-    user=request.user,
-    actions__contains=[p],
-    resource__id=rid,
-  )
+  permission = get_perm(request.user, action, rid)
 
   if permission.resource.is_done(action):
     return http.HttpResponseRedirect('/resources/list/')

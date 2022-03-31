@@ -1,0 +1,28 @@
+{% extends "nmanage_base.html" %}{% load humanize rtags %}
+{% block title %}Login | {{ block.super }}{% endblock %}
+{% block content %}
+<v-card style="margin: 10px auto; max-width: 500px;">
+  <v-card-title class="text-center">
+    Login to Continue
+  </v-card-title>
+  <v-card-text>
+    <v-container style="max-width: 100%;">
+      {% for b in bclasses %}
+      <v-btn href="{% url 'social:begin' b.name %}?next={{ next }}" color="primary">{{ b.display_name }}</v-btn>
+      {% endfor %}
+    </v-container>
+  </v-card-text>
+</v-card>
+{% endblock %}
+{% block mixin %}
+<script>
+  var MIXIN = {
+    data() {
+      return {}
+    },
+    mounted() {
+
+    }
+  };
+</script>
+{% endblock %}

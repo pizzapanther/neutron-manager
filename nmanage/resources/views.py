@@ -1,16 +1,39 @@
 import time
 
 from django import http
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.template.response import TemplateResponse
 from django.shortcuts import get_object_or_404
 
+from social_core.backends.utils import user_backends_data, get_backend
+from social_django.utils import Storage
+
 from nmanage.resources.models import Resource, Permission
+
+
+BACKEND_DISPLAY_NAMES = {
+  'azuread-oauth2': 'Azure Login'
+}
 
 
 def home(request):
   return http.HttpResponseRedirect('/resources/list/')
+
+
+def login_view(request):
+  print(request.user)
+  backends = user_backends_data(request.user, settings.AUTHENTICATION_BACKENDS, Storage)['backends']
+  bclasses = []
+  for b in backends:
+    bclass = get_backend(settings.AUTHENTICATION_BACKENDS, b)
+    bclass.display_name = BACKEND_DISPLAY_NAMES.get(bclass.name, f"{bclass.name} Login")
+    bclasses.append(bclass)
+
+  n = request.GET.get('next', '/')
+  context = {'bclasses': bclasses, 'next': n}
+  return TemplateResponse(request, 'resources/login.html', context)
 
 
 @login_required

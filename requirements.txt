@@ -43,4 +43,5 @@ uvicorn==0.17.6
 uvloop==0.16.0
 watchgod==0.8.1
 websockets==10.2
+whitenoise==6.0.0
 wrapt==1.14.0

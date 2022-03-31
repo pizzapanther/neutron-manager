@@ -183,6 +183,7 @@ summary = "psycopg2 - Python-PostgreSQL Database Adapter"
 [[package]]
 name = "pycparser"
 version = "2.21"
+requires_python = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 summary = "C parser in Python"
 
 [[package]]
@@ -378,6 +379,12 @@ requires_python = ">=3.7"
 summary = "An implementation of the WebSocket Protocol (RFC 6455 & 7692)"
 
 [[package]]
+name = "whitenoise"
+version = "6.0.0"
+requires_python = ">=3.7"
+summary = "Radically simplified static file serving for WSGI applications"
+
+[[package]]
 name = "wrapt"
 version = "1.14.0"
 requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
@@ -385,7 +392,7 @@ summary = "Module for decorators, wrappers and monkey patching."
 
 [metadata]
 lock_version = "3.1"
-content_hash = "sha256:b72cb058ce914572ed6b78d93732f85e422fa734830435dd590f79d465cf1ced"
+content_hash = "sha256:cff101d43961a7271bd5160324ad17499a853e1e2eae8327dab640f44df3d9a8"
 
 [metadata.files]
 "anyio 3.5.0" = [
@@ -818,6 +825,10 @@ content_hash = "sha256:b72cb058ce914572ed6b78d93732f85e422fa734830435dd590f79d46
     {file = "websockets-10.2-pp37-pypy37_pp73-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:0cd02f36d37e503aca88ab23cc0a1a0e92a263d37acf6331521eb38040dcf77b"},
     {file = "websockets-10.2-pp37-pypy37_pp73-win_amd64.whl", hash = "sha256:56d48eebe9e39ce0d68701bce3b21df923aa05dcc00f9fd8300de1df31a7c07c"},
     {file = "websockets-10.2.tar.gz", hash = "sha256:8351c3c86b08156337b0e4ece0e3c5ec3e01fcd14e8950996832a23c99416098"},
+]
+"whitenoise 6.0.0" = [
+    {file = "whitenoise-6.0.0-py3-none-any.whl", hash = "sha256:5a4aff543ee860fbe40d743e556adf92ccd41b7df45697cae074afdf657056b9"},
+    {file = "whitenoise-6.0.0.tar.gz", hash = "sha256:08c42bc535f9777eea1a599289d9433f081921f97887eaf6f559446b2a080374"},
 ]
 "wrapt 1.14.0" = [
     {file = "wrapt-1.14.0-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:5a9a1889cc01ed2ed5f34574c90745fab1dd06ec2eee663e8ebeefe363e8efd7"},

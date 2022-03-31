@@ -129,6 +129,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 FIELD_ENCRYPTION_KEY = os.environ.get('FIELD_ENCRYPTION_KEY', 'hhZl4oxyzS1Lsd1315NuSaFANIPEqQCXKpAwNXlwdKk=')
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+
+REDIS_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379')
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': REDIS_URL,
+    }
+}
+
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
 
 AUTHENTICATION_BACKENDS = os.environ.get('AUTHENTICATION_BACKENDS', 'django.contrib.auth.backends.ModelBackend')

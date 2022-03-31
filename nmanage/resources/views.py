@@ -23,7 +23,6 @@ def home(request):
 
 
 def login_view(request):
-  print(request.user)
   backends = user_backends_data(request.user, settings.AUTHENTICATION_BACKENDS, Storage)['backends']
   bclasses = []
   for b in backends:

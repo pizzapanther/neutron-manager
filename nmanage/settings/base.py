@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'encrypted_model_fields',
+    'social_django',
     'nmanage.resources',
 ]
 
@@ -125,3 +126,5 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 FIELD_ENCRYPTION_KEY = os.environ.get('FIELD_ENCRYPTION_KEY', 'hhZl4oxyzS1Lsd1315NuSaFANIPEqQCXKpAwNXlwdKk=')
+
+SOCIAL_AUTH_JSONFIELD_ENABLED = True

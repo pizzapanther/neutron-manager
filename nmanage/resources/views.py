@@ -37,12 +37,29 @@ def login_view(request):
 
 @login_required
 def my_resources(request):
-  resources = Resource.objects.filter(permission__user=request.user).exclude(account__isnull=True)
+  resources = Resource.objects.filter(permission__user=request.user).exclude(region__isnull=True)
   resources = resources.order_by('-created')
   paginator = Paginator(resources, 50)
 
   page_number = request.GET.get('page')
   page_obj = paginator.get_page(page_number)
+
+  regions = {}
+  for r in page_obj:
+    if r.region.id not in regions:
+      regions[r.region.id] = {
+        'region': r.region,
+        'resources': [],
+      }
+
+    regions[r.region.id]['resources'].append(r.rid)
+
+  for region_id, data in regions.items():
+    ec2_states = data['region'].get_ec2_infos(data['resources'])
+
+    for r in page_obj:
+      if r.rid in ec2_states:
+        r.api_data = ec2_states[r.rid]
 
   context = {
     'page_obj': page_obj,
@@ -96,7 +113,7 @@ def wait_action(request, action, rid):
 
 @login_required
 def view_info(request, rid):
-  resource = Resource.objects.filter(id=rid, permission__user=request.user).exclude(account__isnull=True).first()
+  resource = Resource.objects.filter(id=rid, permission__user=request.user).exclude(region__isnull=True).first()
 
   if not resource:
     raise http.Http404

@@ -21,8 +21,9 @@ def my_resources(request):
 
   page_number = request.GET.get('page')
   page_obj = paginator.get_page(page_number)
+
   context = {
-      'page_obj': page_obj
+    'page_obj': page_obj,
   }
   return TemplateResponse(request, 'resources/list.html', context)
 
@@ -69,3 +70,26 @@ def wait_action(request, action, rid):
     'rid': rid,
   }
   return TemplateResponse(request, 'resources/wait.html', context)
+
+
+@login_required
+def view_info(request, rid):
+  resource = Resource.objects.filter(id=rid, permission__user=request.user).exclude(account__isnull=True).first()
+
+  if not resource:
+    raise http.Http404
+
+  info = {}
+  for key, value in resource.get_info().items():
+    if key in ['InstanceId', 'InstanceType', 'PrivateIpAddress', 'PublicIpAddress', 'State']:
+      if key in ['State']:
+        info[key] = value['Name']
+
+      else:
+        info[key] = value
+
+  context = {
+    'resource': resource,
+    'info': info,
+  }
+  return TemplateResponse(request, 'resources/info.html', context)

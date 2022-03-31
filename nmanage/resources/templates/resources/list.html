@@ -1,4 +1,5 @@
 {% extends "nmanage_base.html" %}{% load humanize rtags %}
+{% block title %}My Resources | {{ block.super }}{% endblock %}
 {% block content %}
 <v-card style="margin: 10px;">
   <v-card-title>
@@ -16,6 +17,9 @@
               </th>
               <th class="text-left">
                 ID
+              </th>
+              <th class="text-left">
+                Type
               </th>
               <th>
                 Region
@@ -38,9 +42,10 @@
               <td>
                 {{ r.rid }}
               </td>
+              <td>{{ r.rtype }}</td>
               <td>{{ r.region }}</td>
               <td>{{ r.created|naturaltime }}</td>
-              <td>
+              <td class="select">
                 <v-select
                   outlined
                   dense
@@ -76,7 +81,7 @@
     },
     methods: {
       run_action(i, rid, name) {
-        var ans = confirm(`Are you sure you with to ${this.resources[i]} ${name}`);
+        var ans = confirm(`Are you sure you wish to ${this.resources[i]} ${name}`);
         if (ans) {
           location.href = `../action/${this.resources[i]}/${rid}/?ts=${Date.now()}`;
         } else{

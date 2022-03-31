@@ -61,6 +61,10 @@ class Resource(models.Model):
     method = f"{self.rtype.lower()}_{action}"
     return getattr(self, method)()
 
+  def get_info(self):
+    response = self.client.describe_instances(InstanceIds=[self.rid])
+    return response['Reservations'][0]['Instances'][0]
+
   def is_done(self, action):
     response = self.client.describe_instances(InstanceIds=[self.rid])
     state = response['Reservations'][0]['Instances'][0]['State']['Name']

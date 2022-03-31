@@ -14,12 +14,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 import nmanage.resources.views as resource_views
 
 
 urlpatterns = [
+  path('social-auth/', include('social_django.urls', namespace='social'))
   path('admin/', admin.site.urls),
   path('resources/list/', resource_views.my_resources),
   path('resources/action/<slug:action>/<int:rid>/', resource_views.execute_action),

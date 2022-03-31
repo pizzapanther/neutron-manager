@@ -20,7 +20,7 @@ import nmanage.resources.views as resource_views
 
 
 urlpatterns = [
-  path('social-auth/', include('social_django.urls', namespace='social'))
+  path('social-auth/', include('social_django.urls', namespace='social')),
   path('admin/', admin.site.urls),
   path('resources/list/', resource_views.my_resources),
   path('resources/action/<slug:action>/<int:rid>/', resource_views.execute_action),

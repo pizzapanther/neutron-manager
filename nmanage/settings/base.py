@@ -69,6 +69,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -128,3 +130,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 FIELD_ENCRYPTION_KEY = os.environ.get('FIELD_ENCRYPTION_KEY', 'hhZl4oxyzS1Lsd1315NuSaFANIPEqQCXKpAwNXlwdKk=')
 
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
+
+AUTHENTICATION_BACKENDS = os.environ.get('AUTHENTICATION_BACKENDS', 'django.contrib.auth.backends.ModelBackend')
+AUTHENTICATION_BACKENDS = AUTHENTICATION_BACKENDS.split(',')
+
+for key, value in os.environ.items():
+    if key.startswith('SOCIAL_AUTH_'):
+        globals()[key] = value

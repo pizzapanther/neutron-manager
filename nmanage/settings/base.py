@@ -127,6 +127,8 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 FIELD_ENCRYPTION_KEY = os.environ.get('FIELD_ENCRYPTION_KEY', 'hhZl4oxyzS1Lsd1315NuSaFANIPEqQCXKpAwNXlwdKk=')
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'

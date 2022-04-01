@@ -21,6 +21,20 @@ class AwsAccount(models.Model):
     return self.name
 
 
+class HostedZone(models.Model):
+  name = models.CharField(max_length=75)
+  base_domain = models.CharField(max_length=255)
+  zone_id = models.CharField(max_length=255)
+
+  account = models.ForeignKey(AwsAccount, on_delete=models.CASCADE)
+
+  created = models.DateTimeField(auto_now_add=True, db_index=True)
+  modified = models.DateTimeField(auto_now=True, db_index=True)
+
+  def __str__(self):
+    return self.name
+
+
 class Region(models.Model):
   name = models.CharField(max_length=75)
   region = models.CharField(max_length=25, blank=True, null=True, validators=[validators.validate_slug])
@@ -64,11 +78,18 @@ class Resource(models.Model):
   class ResourceTypes(models.TextChoices):
     EC2 = 'EC2', 'EC2'
 
+  class ZoneUpdateTypes(models.TextChoices):
+    PUBLIC = 'PUBLIC', 'Public'
+    PRIVATE = 'PRIVATE', 'Private'
+
   name = models.CharField(max_length=75, validators=[validators.validate_slug])
   rid = models.CharField('Resource ID', max_length=75)
   rtype = models.CharField('Resource Type', max_length=10, choices=ResourceTypes.choices)
 
   region = models.ForeignKey(Region, on_delete=models.SET_NULL, blank=True, null=True)
+  zone = models.ForeignKey(HostedZone, on_delete=models.SET_NULL, blank=True, null=True)
+  zone_update = models.CharField(max_length=10, choices=ZoneUpdateTypes.choices)
+  last_zone_ip = models.CharField(max_length=75, blank=True, null=True)
 
   created = models.DateTimeField(auto_now_add=True, db_index=True)
   modified = models.DateTimeField(auto_now=True, db_index=True)
@@ -111,9 +132,20 @@ class Resource(models.Model):
       return state == 'stopped'
 
     if action in ['start', 'reboot']:
+      if state == 'running':
+        if self.zone:
+          self.update_zone_record(response['Reservations'][0]['Instances'][0])
+
       return state == 'running'
 
     return False
+
+  def update_zone_record(self, info):
+    if self.zone_update == 'PUBLIC':
+      ip = info['PublicIpAddress']
+
+    else:
+      ip = info['PrivateIpAddress']
 
   def ec2_start(self):
     self.client.start_instances(InstanceIds=[self.rid])

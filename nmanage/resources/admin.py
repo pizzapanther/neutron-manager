@@ -1,13 +1,21 @@
 from django.contrib import admin
 
 
-from nmanage.resources.models import Resource, Region, Permission, AwsAccount
+from nmanage.resources.models import Resource, Region, Permission, AwsAccount, HostedZone
 
 
 @admin.register(AwsAccount)
 class AwsAccountAdmin(admin.ModelAdmin):
   list_display = ('name', 'key_id', 'modified')
   list_filter = ('created', 'modified')
+  date_hierarchy = 'modified'
+
+
+@admin.register(HostedZone)
+class ZoneAdmin(admin.ModelAdmin):
+  list_display = ('name', 'base_domain', 'zone_id', 'modified')
+  list_filter = ('created', 'modified')
+  raw_id_fields = ('account',)
   date_hierarchy = 'modified'
 
 
@@ -30,7 +38,7 @@ class ResourceAdmin(admin.ModelAdmin):
   list_filter = ('rtype', 'region', 'created', 'modified')
   date_hierarchy = 'modified'
   search_fields = ('name', 'rid')
-  raw_id_fields = ('region',)
+  raw_id_fields = ('region', 'zone')
   inlines = (PermissionInline,)
 
   def _permissions(self, obj):

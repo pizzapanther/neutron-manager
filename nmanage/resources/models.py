@@ -1,3 +1,4 @@
+from django.core import validators
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
@@ -22,7 +23,7 @@ class AwsAccount(models.Model):
 
 class Region(models.Model):
   name = models.CharField(max_length=75)
-  region = models.CharField(max_length=25, blank=True, null=True)
+  region = models.CharField(max_length=25, blank=True, null=True, validators=[validators.validate_slug])
   endpoint = models.CharField(max_length=128, blank=True, null=True)
   account = models.ForeignKey(AwsAccount, on_delete=models.CASCADE)
 
@@ -63,7 +64,7 @@ class Resource(models.Model):
   class ResourceTypes(models.TextChoices):
     EC2 = 'EC2', 'EC2'
 
-  name = models.CharField(max_length=75)
+  name = models.CharField(max_length=75, validators=[validators.validate_slug])
   rid = models.CharField('Resource ID', max_length=75)
   rtype = models.CharField('Resource Type', max_length=10, choices=ResourceTypes.choices)
 

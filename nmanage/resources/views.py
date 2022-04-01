@@ -39,7 +39,7 @@ def login_view(request):
 def my_resources(request):
   resources = Resource.objects.filter(permission__user=request.user).exclude(region__isnull=True)
   resources = resources.order_by('-created')
-  paginator = Paginator(resources, 50)
+  paginator = Paginator(resources, 10)
 
   page_number = request.GET.get('page')
   page_obj = paginator.get_page(page_number)

@@ -53,8 +53,9 @@ class Region(models.Model):
   def get_ec2_infos(self, rids):
     response = self.client('ec2').describe_instances(InstanceIds=rids)
     ret = {}
-    for instance in response['Reservations'][0]['Instances']:
-      ret[instance['InstanceId']] = instance
+    for rserv in response['Reservations']:
+      for instance in rserv['Instances']:
+        ret[instance['InstanceId']] = instance
 
     return ret
 

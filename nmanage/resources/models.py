@@ -147,6 +147,8 @@ class Resource(models.Model):
     else:
       ip = info['PrivateIpAddress']
 
+
+
   def ec2_start(self):
     self.client.start_instances(InstanceIds=[self.rid])
     return True

@@ -20,6 +20,13 @@ class AwsAccount(models.Model):
   def __str__(self):
     return self.name
 
+  @property
+  def client_kwargs(self):
+    return {
+      'aws_access_key_id': self.key_id,
+      'aws_secret_access_key': self.key_secret,
+    }
+
 
 class HostedZone(models.Model):
   name = models.CharField(max_length=75)
@@ -33,6 +40,25 @@ class HostedZone(models.Model):
 
   def __str__(self):
     return self.name
+
+  def update_record(self, name, ip):
+    client = boto3.client('route53', **self.account.client_kwargs)
+    response = client.change_resource_record_sets(
+      ChangeBatch={
+        'Changes': [
+            {
+              'Action': 'UPSERT',
+              'ResourceRecordSet': {
+                'Name': f'{name}.{self.base_domain}',
+                'ResourceRecords': [{'Value': ip}],
+                'TTL': 300,
+                'Type': 'A',
+              },
+            },
+        ]
+      },
+      HostedZoneId=self.zone_id
+    )
 
 
 class Region(models.Model):
@@ -49,10 +75,7 @@ class Region(models.Model):
 
   @property
   def client_kwargs(self):
-    ret = {
-      'aws_access_key_id': self.account.key_id,
-      'aws_secret_access_key': self.account.key_secret,
-    }
+    ret = self.account.client_kwargs
 
     if self.endpoint:
       ret['endpoint_url'] = self.endpoint
@@ -147,7 +170,10 @@ class Resource(models.Model):
     else:
       ip = info['PrivateIpAddress']
 
-
+    if self.last_zone_ip != ip:
+      self.zone.update_record(self.name, ip)
+      self.last_zone_ip = ip
+      self.save()
 
   def ec2_start(self):
     self.client.start_instances(InstanceIds=[self.rid])

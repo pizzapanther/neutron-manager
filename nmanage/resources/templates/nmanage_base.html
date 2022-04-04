@@ -36,6 +36,9 @@
           <v-icon class="mdi mdi-format-list-bulleted"></v-icon>
         </v-btn>
       </v-navigation-drawer>
+      <v-app-bar app color="primary">
+        <v-toolbar-title style="color: white;">{{ site_name }}</v-toolbar-title>
+      </v-app-bar>
       <v-main>
         {% block content %}{% endblock %}
       </v-main>

@@ -1,8 +1,11 @@
+from django.conf import settings
 from django.contrib import admin
-
 
 from nmanage.resources.models import Resource, Region, Permission, AwsAccount, HostedZone
 
+
+admin.site.site_header = f'{settings.SITE_NAME} Admin'
+admin.site.site_title = f'{settings.SITE_NAME}'
 
 @admin.register(AwsAccount)
 class AwsAccountAdmin(admin.ModelAdmin):

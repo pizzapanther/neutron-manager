@@ -72,6 +72,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'social_django.context_processors.backends',
                 'social_django.context_processors.login_redirect',
+                'nmanage.context_processors.site',
             ],
         },
     },
@@ -147,6 +148,8 @@ SOCIAL_AUTH_JSONFIELD_ENABLED = True
 
 AUTHENTICATION_BACKENDS = os.environ.get('AUTHENTICATION_BACKENDS', 'django.contrib.auth.backends.ModelBackend')
 AUTHENTICATION_BACKENDS = AUTHENTICATION_BACKENDS.split(',')
+
+SITE_NAME = os.environ.get('SITE_NAME', 'Neutron Manager')
 
 for key, value in os.environ.items():
     if key.startswith('SOCIAL_AUTH_'):

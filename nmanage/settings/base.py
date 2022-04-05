@@ -137,7 +137,7 @@ FIELD_ENCRYPTION_KEY = os.environ.get('FIELD_ENCRYPTION_KEY', 'hhZl4oxyzS1Lsd131
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
-REDIS_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379')
+REDIS_URL = os.environ.get('STACKHERO_REDIS_URL_TLS', 'redis://localhost:6379')
 
 CACHES = {
     'default': {

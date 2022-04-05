@@ -27,5 +27,6 @@ urlpatterns = [
   path('resources/action/<slug:action>/<int:rid>/', resource_views.execute_action),
   path('resources/wait/<slug:action>/<int:rid>/', resource_views.wait_action),
   path('resources/info/<int:rid>/', resource_views.view_info),
+  path('resources/info/<int:rid>/edit-schedule/', resource_views.edit_schedule),
   path('', resource_views.home),
 ]

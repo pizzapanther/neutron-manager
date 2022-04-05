@@ -1,0 +1,49 @@
+{% extends "nmanage_base.html" %}{% load humanize rtags %}
+{% block title %}Edit Schedule: {{ resource.name }} | {{ block.super }}{% endblock %}
+{% block content %}
+<v-card style="margin: 10px auto; max-width: 500px;">
+  <v-card-title class="text-center">
+    Edit Schedule: {{ resource.name }}
+  </v-card-title>
+  <v-card-text>
+    <v-container style="max-width: 100%;">
+      <form action="./" method="POST">
+        {% csrf_token %}
+        <ul class="main-form">{{ form_render|safe }}</ul>
+        <v-btn color="primary" type="submit">
+          Save
+        </v-btn>
+      </form>
+    </v-container>
+  </v-card-text>
+</v-card>
+{% endblock %}
+{% block mixin %}
+<style>
+  ul.main-form {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+  }
+
+  ul.main-form li {
+    margin: 0;
+    padding: 0;
+  }
+</style>
+<script>
+  var MIXIN = {
+    data() {
+      return {
+        disabled: {% if form.data.disabled %}'ON'{% else %}false{% endif %}
+      }
+    },
+    mounted() {
+
+    },
+    methods: {
+
+    }
+  };
+</script>
+{% endblock %}

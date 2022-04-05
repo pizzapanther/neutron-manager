@@ -17,6 +17,7 @@ dependencies = [
     "gunicorn>=20.1.0",
     "uvicorn[standard]>=0.17.6",
     "whitenoise>=6.0.0",
+    "huey>=2.4.3",
 ]
 requires-python = ">=3.9"
 

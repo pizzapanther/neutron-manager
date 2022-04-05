@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'encrypted_model_fields',
     'social_django',
+    'huey.contrib.djhuey',
     'nmanage.resources',
 ]
 
@@ -55,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'nmanage.middleware.TimezoneMiddleware',
 ]
 
 ROOT_URLCONF = 'nmanage.urls'
@@ -150,6 +152,28 @@ AUTHENTICATION_BACKENDS = os.environ.get('AUTHENTICATION_BACKENDS', 'django.cont
 AUTHENTICATION_BACKENDS = AUTHENTICATION_BACKENDS.split(',')
 
 SITE_NAME = os.environ.get('SITE_NAME', 'Neutron Manager')
+
+HUEY = {
+    'huey_class': 'huey.RedisHuey',  # Huey implementation to use.
+    'name': DATABASES['default']['NAME'],  # Use db name for huey.
+    'results': True,  # Store return values of tasks.
+    'store_none': False,  # If a task returns None, do not save to results.
+    'immediate': False,  # If DEBUG=True, run synchronously.
+    'utc': True,  # Use UTC for all times internally.
+    'blocking': True,  # Perform blocking pop rather than poll Redis.
+    'connection': {'url': REDIS_URL + '/0'},
+    'consumer': {
+        'workers': int(os.environ.get('WORKERS', '4')),
+        'worker_type': 'thread',
+        'initial_delay': 0.1,  # Smallest polling interval, same as -d.
+        'backoff': 1.15,  # Exponential backoff using this rate, -b.
+        'max_delay': 10.0,  # Max possible polling interval, -m.
+        'scheduler_interval': 1,  # Check schedule every second, -s.
+        'periodic': True,  # Enable crontab feature.
+        'check_worker_health': True,  # Enable worker health checks.
+        'health_check_interval': 1,  # Check worker health every second.
+    },
+}
 
 for key, value in os.environ.items():
     if key.startswith('SOCIAL_AUTH_'):

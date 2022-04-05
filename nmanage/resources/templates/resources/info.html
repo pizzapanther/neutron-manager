@@ -30,10 +30,46 @@
             </tr>
           </thead>
           <tbody>
+            {% if resource.zone %}
+            <tr>
+              <td><strong>DNS</strong></td>
+              <td>{{ resource.dns }}</td>
+            </tr>
+            {% endif %}
             {% for key, value in info.items %}
             <tr>
               <td><strong>{{ key }}</strong></td>
               <td>{{ value }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </template>
+      </v-simple-table>
+      <v-divider></v-divider>
+      <br>
+      {% if request.user|can_schedule:resource %}
+      <v-btn class="float-right" color="primary" small href="./edit-schedule/">Edit Schedule</v-btn>
+      {% endif %}
+      <h3>Power Scheduling</h3>
+      <br>
+      <strong>Power Scheduling Disabled: {{ resource.disable_power_schedule }}</strong>
+      <v-simple-table>
+        <template v-slot:default>
+          <thead>
+            <tr>
+              <th class="text-left">
+                Event Time
+              </th>
+              <th class="text-left">
+                Event Type
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for event in resource.powerschedule_set.all %}
+            <tr>
+              <td><strong>{{ event.event_ts|date:"l, h:i A" }}</strong></td>
+              <td>{{ event.event_type }}</td>
             </tr>
             {% endfor %}
           </tbody>

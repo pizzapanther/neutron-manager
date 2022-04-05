@@ -46,7 +46,7 @@
             {% for r in page_obj %}
             <tr>
               <td>
-                <a href="../info/{{ r.id }}/">{{ r.name }}</a>
+                <a href="../info/{{ r.id }}/">{% if r.dns %}{{ r.dns }}{% else %}{{ r.name }}{% endif %}</a>
               </td>
               <td>{{ r.rtype }}</td>
               <td>{{ r.region }}</td>

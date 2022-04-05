@@ -1,3 +1,4 @@
+import re
 import time
 
 from django import http
@@ -10,7 +11,8 @@ from django.shortcuts import get_object_or_404
 from social_core.backends.utils import user_backends_data, get_backend
 from social_django.utils import Storage
 
-from nmanage.resources.models import Resource, Permission
+from nmanage.resources.models import Resource, Permission, PowerSchedule, rebuild_schedule
+from nmanage.resources.forms import ScheduleForm
 
 
 BACKEND_DISPLAY_NAMES = {
@@ -68,7 +70,7 @@ def my_resources(request):
 
 
 def get_perm(user, action, rid):
-  p = None
+  p = action
   for key, actions in Permission.ACTION_MAP.items():
     for a in actions:
       if a == action:
@@ -132,3 +134,80 @@ def view_info(request, rid):
     'info': info,
   }
   return TemplateResponse(request, 'resources/info.html', context)
+
+
+def get_event(request, resource, dow, etype):
+  event = PowerSchedule.objects.filter(resource=resource, event_type=etype, event_ts__iso_week_day=dow).first()
+  if event:
+    if request.timezone:
+      return event.event_ts.astimezone(request.timezone).time()
+
+    return event.event_ts.time()
+
+
+@login_required
+def edit_schedule(request, rid):
+  permission = get_perm(request.user, 'schedule', rid)
+  resource = permission.resource
+
+  init = {
+    'disabled': resource.disable_power_schedule,
+    'monday_on': get_event(request, resource, 1, 'ON'),
+    'monday_off': get_event(request, resource, 1, 'OFF'),
+
+    'tuesday_on': get_event(request, resource, 2, 'ON'),
+    'tuesday_off': get_event(request, resource, 2, 'OFF'),
+
+    'wednesday_on': get_event(request, resource, 3, 'ON'),
+    'wednesday_off': get_event(request, resource, 3, 'OFF'),
+
+    'thursday_on': get_event(request, resource, 4, 'ON'),
+    'thursday_off': get_event(request, resource, 4, 'OFF'),
+
+    'friday_on': get_event(request, resource, 5, 'ON'),
+    'friday_off': get_event(request, resource, 5, 'OFF'),
+
+    'saturday_on': get_event(request, resource, 6, 'ON'),
+    'saturday_off': get_event(request, resource, 6, 'OFF'),
+
+    'sunday_on': get_event(request, resource, 7, 'ON'),
+    'sunday_off': get_event(request, resource, 7, 'OFF'),
+  }
+
+  if request.method == 'POST':
+    form = ScheduleForm(request.POST)
+
+    if form.is_valid():
+      resource.disable_power_schedule = form.cleaned_data['disabled']
+      resource.save()
+      rebuild_schedule(request.timezone, resource, form.cleaned_data)
+      return http.HttpResponseRedirect('../')
+
+  else:
+    form = ScheduleForm(init)
+
+  render = form.as_ul()
+  lines = ''
+  label = ''
+  for line in render.split("\n"):
+    regex = re.search('<label.*>(.*):</label>', line)
+    if regex:
+      label = regex.group(1)
+
+    elif '<input type="checkbox"' in line:
+      lines += line.replace('<input type="checkbox"', f'<v-checkbox v-model="disabled" value="ON" label="{label}"')
+      lines += '</v-checkbox>\n'
+
+    elif '<input type="text"' in line:
+      lines += line.replace('<input type="text"', f'<v-text-field outlined clearable label="{label}" type="time"')
+      lines += '</v-text-field>\n'
+
+    else:
+      lines += line + "\n"
+
+  context = {
+    'resource': resource,
+    'form': form,
+    'form_render': lines,
+  }
+  return TemplateResponse(request, 'resources/edit_schedule.html', context)

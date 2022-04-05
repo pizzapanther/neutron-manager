@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib import admin
 
-from nmanage.resources.models import Resource, Region, Permission, AwsAccount, HostedZone
+from nmanage.resources.models import Resource, Region, Permission, AwsAccount, HostedZone, PowerSchedule
 
 
 admin.site.site_header = f'{settings.SITE_NAME} Admin'
@@ -35,6 +35,10 @@ class PermissionInline(admin.TabularInline):
   raw_id_fields = ('user',)
 
 
+class PowerScheduleInline(admin.TabularInline):
+  model = PowerSchedule
+
+
 @admin.register(Resource)
 class ResourceAdmin(admin.ModelAdmin):
   list_display = ('name', 'rid', 'rtype', 'region', '_permissions', 'modified')
@@ -42,7 +46,7 @@ class ResourceAdmin(admin.ModelAdmin):
   date_hierarchy = 'modified'
   search_fields = ('name', 'rid')
   raw_id_fields = ('region', 'zone')
-  inlines = (PermissionInline,)
+  inlines = (PermissionInline, PowerScheduleInline)
 
   def _permissions(self, obj):
     return obj.permission_set.all().count()

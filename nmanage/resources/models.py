@@ -1,7 +1,10 @@
+import datetime
+
 from django.core import validators
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.utils import timezone
 
 import boto3
 
@@ -114,11 +117,18 @@ class Resource(models.Model):
   zone_update = models.CharField(max_length=10, choices=ZoneUpdateTypes.choices)
   last_zone_ip = models.CharField(max_length=75, blank=True, null=True)
 
+  disable_power_schedule = models.BooleanField(default=False)
+
   created = models.DateTimeField(auto_now_add=True, db_index=True)
   modified = models.DateTimeField(auto_now=True, db_index=True)
 
   def __str__(self):
     return self.name
+
+  @property
+  def dns(self):
+    if self.zone:
+      return f'{self.name}.{self.zone.base_domain}'
 
   @property
   def account(self):
@@ -194,6 +204,7 @@ class Resource(models.Model):
 class Permission(models.Model):
   class AvailableActions(models.TextChoices):
     POWER = 'power', 'Power On/Off'
+    SCHEDULE = 'schedule', 'Edit Schedule'
 
   ACTION_MAP = {
     AvailableActions.POWER.value: ['start', 'stop', 'reboot', 'force_stop']
@@ -205,3 +216,62 @@ class Permission(models.Model):
   actions = ArrayField(
     models.CharField('Action Type', max_length=10, choices=AvailableActions.choices)
   )
+
+
+class PowerSchedule(models.Model):
+  class EventTypes(models.TextChoices):
+    ON = 'ON'
+    OFF = 'OFF'
+
+  resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
+
+  event_ts = models.DateTimeField(db_index=True)
+  event_type = models.CharField(max_length=3, choices=EventTypes.choices)
+
+  last_executed = models.DateTimeField(blank=True, null=True)
+
+  created = models.DateTimeField(auto_now_add=True, db_index=True)
+  modified = models.DateTimeField(auto_now=True, db_index=True)
+
+  class Meta:
+    ordering =('event_ts',)
+
+  def __str__(self):
+    return '{} {}'.format(self.resource.name, self.event_type)
+
+  def reschedule(self):
+    new_event = self.event_ts + datetime.timedelta(days=7)
+    new_event = new_event.replace(hour=self.event_ts.hour)
+    self.event_ts = new_event
+
+
+def rebuild_schedule(tz, resource, schedule_data):
+  PowerSchedule.objects.filter(resource=resource).delete()
+
+  days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+  for i, day in enumerate(days, start=1):
+    for t in ['on', 'off']:
+      key = f'{day}_{t}'
+      if schedule_data[key]:
+        value = schedule_data[key]
+        now = timezone.now()
+        ts = timezone.now()
+        if tz:
+          ts = ts.astimezone(tz)
+
+        ts = ts.replace(hour=value.hour, minute=value.minute, second=0)
+        if ts > now:
+          pass
+
+        else:
+          ts = ts + datetime.timedelta(days=1)
+
+        while 1:
+          if ts.isoweekday() == i:
+            break
+
+          else:
+            ts = ts + datetime.timedelta(days=1)
+
+        ps = PowerSchedule(resource=resource, event_type=t.upper(), event_ts=ts)
+        ps.save()

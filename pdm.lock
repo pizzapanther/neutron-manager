@@ -117,6 +117,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "django-easy-logging"
+version = "0.4.0"
+requires_python = ">=3.7"
+summary = "Easy Django logging with Loguru"
+dependencies = [
+    "loguru>=0.6.0",
+]
+
+[[package]]
 name = "django-encrypted-model-fields"
 version = "0.6.5"
 requires_python = ">=3.6,<4.0"
@@ -163,6 +172,16 @@ name = "jmespath"
 version = "1.0.0"
 requires_python = ">=3.7"
 summary = "JSON Matching Expressions"
+
+[[package]]
+name = "loguru"
+version = "0.6.0"
+requires_python = ">=3.5"
+summary = "Python logging made (stupidly) simple"
+dependencies = [
+    "colorama>=0.3.4; sys_platform == \"win32\"",
+    "win32-setctime>=1.0.0; sys_platform == \"win32\"",
+]
 
 [[package]]
 name = "oauthlib"
@@ -389,6 +408,12 @@ requires_python = ">=3.7"
 summary = "Radically simplified static file serving for WSGI applications"
 
 [[package]]
+name = "win32-setctime"
+version = "1.1.0"
+requires_python = ">=3.5"
+summary = "A small Python utility to set file creation time on Windows"
+
+[[package]]
 name = "wrapt"
 version = "1.14.0"
 requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
@@ -396,7 +421,7 @@ summary = "Module for decorators, wrappers and monkey patching."
 
 [metadata]
 lock_version = "3.1"
-content_hash = "sha256:f032a6cfaf1d972557bf59af8b7bcc609ed04ace3947769dd6c0119fe53c7f23"
+content_hash = "sha256:ce162176a9f51f724b77bf8cf489ca964b4a0fce187f31c1a62bdfa394a3179c"
 
 [metadata.files]
 "anyio 3.5.0" = [
@@ -525,6 +550,10 @@ content_hash = "sha256:f032a6cfaf1d972557bf59af8b7bcc609ed04ace3947769dd6c0119fe
     {file = "Django-4.0.3-py3-none-any.whl", hash = "sha256:1239218849e922033a35d2a2f777cb8bee18bd725416744074f455f34ff50d0c"},
     {file = "Django-4.0.3.tar.gz", hash = "sha256:77ff2e7050e3324c9b67e29b6707754566f58514112a9ac73310f60cd5261930"},
 ]
+"django-easy-logging 0.4.0" = [
+    {file = "django_easy_logging-0.4.0-py3-none-any.whl", hash = "sha256:33f311f9f19622e78c8a6866312f472e581186ee9769b347a39b1c57a259fb8b"},
+    {file = "django-easy-logging-0.4.0.tar.gz", hash = "sha256:097619a86e86de5166afe94fb14a307eccc95fc395d7222f1bfdd9e4bb333084"},
+]
 "django-encrypted-model-fields 0.6.5" = [
     {file = "django_encrypted_model_fields-0.6.5-py3-none-any.whl", hash = "sha256:b21bbdd8ae2e1a0ea37a5049b3ba46e6e63bf287ad241219a058fac1070796cc"},
     {file = "django-encrypted-model-fields-0.6.5.tar.gz", hash = "sha256:8bd21c5565c0d64ec4dbd375ad34fea68b4da2db871dec3fa71fe7b5e4221c99"},
@@ -583,6 +612,10 @@ content_hash = "sha256:f032a6cfaf1d972557bf59af8b7bcc609ed04ace3947769dd6c0119fe
 "jmespath 1.0.0" = [
     {file = "jmespath-1.0.0-py3-none-any.whl", hash = "sha256:e8dcd576ed616f14ec02eed0005c85973b5890083313860136657e24784e4c04"},
     {file = "jmespath-1.0.0.tar.gz", hash = "sha256:a490e280edd1f57d6de88636992d05b71e97d69a26a19f058ecf7d304474bf5e"},
+]
+"loguru 0.6.0" = [
+    {file = "loguru-0.6.0-py3-none-any.whl", hash = "sha256:4e2414d534a2ab57573365b3e6d0234dfb1d84b68b7f3b948e6fb743860a77c3"},
+    {file = "loguru-0.6.0.tar.gz", hash = "sha256:066bd06758d0a513e9836fd9c6b5a75bfb3fd36841f4b996bc60b547a309d41c"},
 ]
 "oauthlib 3.2.0" = [
     {file = "oauthlib-3.2.0-py3-none-any.whl", hash = "sha256:6db33440354787f9b7f3a6dbd4febf5d0f93758354060e802f6c06cb493022fe"},
@@ -836,6 +869,10 @@ content_hash = "sha256:f032a6cfaf1d972557bf59af8b7bcc609ed04ace3947769dd6c0119fe
 "whitenoise 6.0.0" = [
     {file = "whitenoise-6.0.0-py3-none-any.whl", hash = "sha256:5a4aff543ee860fbe40d743e556adf92ccd41b7df45697cae074afdf657056b9"},
     {file = "whitenoise-6.0.0.tar.gz", hash = "sha256:08c42bc535f9777eea1a599289d9433f081921f97887eaf6f559446b2a080374"},
+]
+"win32-setctime 1.1.0" = [
+    {file = "win32_setctime-1.1.0-py3-none-any.whl", hash = "sha256:231db239e959c2fe7eb1d7dc129f11172354f98361c4fa2d6d2d7e278baa8aad"},
+    {file = "win32_setctime-1.1.0.tar.gz", hash = "sha256:15cf5750465118d6929ae4de4eb46e8edae9a5634350c01ba582df868e932cb2"},
 ]
 "wrapt 1.14.0" = [
     {file = "wrapt-1.14.0-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:5a9a1889cc01ed2ed5f34574c90745fab1dd06ec2eee663e8ebeefe363e8efd7"},

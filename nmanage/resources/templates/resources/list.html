@@ -7,7 +7,19 @@
   </v-card-title>
   <v-card-text>
     <v-container style="max-width: 100%;">
-      <v-pagination v-model="page" :length="{{ page_obj.paginator.num_pages }}"></v-pagination>
+      <div class="d-flex">
+        <div>
+          <form action="./" method="GET" class="d-flex align-center">
+            <v-text-field name="search" outlined label="Search" dense value="{{ search }}"></v-text-field>
+            <v-btn type="submit" icon small>
+              <v-icon class="mdi mdi-send"></v-icon>
+            </v-btn>
+          </form>
+        </div>
+        <div class="flex-grow-1 d-flex justify-end">
+          <v-pagination v-model="page" :length="{{ page_obj.paginator.num_pages }}"></v-pagination>
+        </div>
+      </div>
       <v-simple-table>
         <template v-slot:default>
           <thead>
@@ -69,12 +81,19 @@
           </tbody>
         </template>
       </v-simple-table>
-      <v-pagination v-model="page" :length="{{ page_obj.paginator.num_pages }}"></v-pagination>
+      <div class="d-flex justify-end">
+        <v-pagination v-model="page" :length="{{ page_obj.paginator.num_pages }}"></v-pagination>
+      </div>
     </v-container>
   </v-card-text>
 </v-card>
 {% endblock %}
 {% block mixin %}
+<style>
+  .v-text-field__details {
+    display: none;
+  }
+</style>
 <script>
   var MIXIN = {
     data() {

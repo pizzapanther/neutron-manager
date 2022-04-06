@@ -5,6 +5,7 @@ from django import http
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.template.response import TemplateResponse
 from django.shortcuts import get_object_or_404
 
@@ -39,11 +40,16 @@ def login_view(request):
 
 @login_required
 def my_resources(request):
+  search = request.GET.get('search', '')
+
   if request.user.is_superuser:
     resources = Resource.objects.exclude(region__isnull=True)
 
   else:
     resources = Resource.objects.filter(permission__user=request.user).exclude(region__isnull=True)
+
+  if search:
+    resources = resources.filter(Q(name__icontains=search) | Q(region__region=search))
 
   resources = resources.order_by('-created')
   paginator = Paginator(resources, 10)
@@ -70,6 +76,7 @@ def my_resources(request):
 
   context = {
     'page_obj': page_obj,
+    'search': search,
   }
   return TemplateResponse(request, 'resources/list.html', context)
 

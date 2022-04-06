@@ -43,9 +43,6 @@
                 State
               </th>
               <th class="text-left">
-                Created
-              </th>
-              <th class="text-left">
                 Actions
               </th>
               <th></th>
@@ -62,7 +59,6 @@
               <td>{{ r.api_data.InstanceType|default:"---" }}</td>
               <td>{{ r.api_data.PublicIpAddress|default:"---" }}</td>
               <td>{{ r.api_data.State.Name|default:"---" }}</td>
-              <td>{{ r.created|naturaltime }}</td>
               <td class="select">
                 <v-select
                   outlined

@@ -104,7 +104,9 @@
     },
     watch: {
       page(to, from) {
-        location.href = `./?page=${to}`
+        var url = new URL(location.href);
+        url.searchParams.set('page', to);
+        location.href = url.href;
       }
     },
     methods: {

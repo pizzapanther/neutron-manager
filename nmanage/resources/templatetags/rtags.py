@@ -7,17 +7,21 @@ register = template.Library()
 
 @register.filter
 def actions(resource, user):
-  p = Permission.objects.filter(resource=resource, user=user).first()
-  if p:
-    actions = []
-    for a in p.actions:
-      if a in Permission.ACTION_MAP:
-        for v in Permission.ACTION_MAP[a]:
-          actions.append(f"'{v}'")
+  actions = []
+  if user.is_superuser:
+    for perm, verbs in Permission.ACTION_MAP.items():
+      for v in verbs:
+        actions.append(f"'{v}'")
 
-    return "[{}]".format(",".join(actions))
+  else:
+    p = Permission.objects.filter(resource=resource, user=user).first()
+    if p:
+      for a in p.actions:
+        if a in Permission.ACTION_MAP:
+          for v in Permission.ACTION_MAP[a]:
+            actions.append(f"'{v}'")
 
-  return '[]'
+  return "[{}]".format(",".join(actions))
 
 
 @register.filter

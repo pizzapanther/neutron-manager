@@ -217,6 +217,20 @@ class Permission(models.Model):
     models.CharField('Action Type', max_length=10, choices=AvailableActions.choices)
   )
 
+  do_not_save = False
+
+  def save(self):
+    if self.do_not_save:
+      return
+
+    return super().save()
+
+
+def SuperPermission(user, action, rid):
+  perm = Permission(user=user, resource_id=rid, actions=[action])
+  perm.do_not_save = True
+  return perm
+
 
 class PowerSchedule(models.Model):
   class EventTypes(models.TextChoices):

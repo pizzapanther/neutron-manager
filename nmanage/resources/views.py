@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404
 from social_core.backends.utils import user_backends_data, get_backend
 from social_django.utils import Storage
 
-from nmanage.resources.models import Resource, Permission, PowerSchedule, rebuild_schedule
+from nmanage.resources.models import Resource, Permission, SuperPermission, PowerSchedule, rebuild_schedule
 from nmanage.resources.forms import ScheduleForm
 
 
@@ -39,7 +39,12 @@ def login_view(request):
 
 @login_required
 def my_resources(request):
-  resources = Resource.objects.filter(permission__user=request.user).exclude(region__isnull=True)
+  if request.user.is_superuser:
+    resources = Resource.objects.exclude(region__isnull=True)
+
+  else:
+    resources = Resource.objects.filter(permission__user=request.user).exclude(region__isnull=True)
+
   resources = resources.order_by('-created')
   paginator = Paginator(resources, 10)
 
@@ -79,12 +84,16 @@ def get_perm(user, action, rid):
   if p is None:
     raise http.Http404
 
-  return get_object_or_404(
-    Permission,
-    user=user,
-    actions__contains=[p],
-    resource__id=rid,
-  )
+  if user.is_superuser:
+    return SuperPermission(user, p, rid)
+
+  else:
+    return get_object_or_404(
+      Permission,
+      user=user,
+      actions__contains=[p],
+      resource__id=rid,
+    )
 
 
 @login_required
@@ -115,7 +124,11 @@ def wait_action(request, action, rid):
 
 @login_required
 def view_info(request, rid):
-  resource = Resource.objects.filter(id=rid, permission__user=request.user).exclude(region__isnull=True).first()
+  if request.user.is_superuser:
+    resource = Resource.objects.filter(id=rid).exclude(region__isnull=True).first()
+
+  else:
+    resource = Resource.objects.filter(id=rid, permission__user=request.user).exclude(region__isnull=True).first()
 
   if not resource:
     raise http.Http404

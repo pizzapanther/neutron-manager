@@ -34,9 +34,9 @@ class AwsAccount(models.Model):
 class HostedZone(models.Model):
   name = models.CharField(max_length=75)
   base_domain = models.CharField(max_length=255)
-  zone_id = models.CharField(max_length=255)
+  zone_id = models.CharField(max_length=255, blank=True, null=True)
 
-  account = models.ForeignKey(AwsAccount, on_delete=models.CASCADE)
+  account = models.ForeignKey(AwsAccount, on_delete=models.CASCADE, blank=True, null=True)
 
   created = models.DateTimeField(auto_now_add=True, db_index=True)
   modified = models.DateTimeField(auto_now=True, db_index=True)
@@ -45,23 +45,24 @@ class HostedZone(models.Model):
     return self.name
 
   def update_record(self, name, ip):
-    client = boto3.client('route53', **self.account.client_kwargs)
-    response = client.change_resource_record_sets(
-      ChangeBatch={
-        'Changes': [
-            {
-              'Action': 'UPSERT',
-              'ResourceRecordSet': {
-                'Name': f'{name}.{self.base_domain}',
-                'ResourceRecords': [{'Value': ip}],
-                'TTL': 300,
-                'Type': 'A',
+    if self.zone_id and self.account:
+      client = boto3.client('route53', **self.account.client_kwargs)
+      response = client.change_resource_record_sets(
+        ChangeBatch={
+          'Changes': [
+              {
+                'Action': 'UPSERT',
+                'ResourceRecordSet': {
+                  'Name': f'{name}.{self.base_domain}',
+                  'ResourceRecords': [{'Value': ip}],
+                  'TTL': 300,
+                  'Type': 'A',
+                },
               },
-            },
-        ]
-      },
-      HostedZoneId=self.zone_id
-    )
+          ]
+        },
+        HostedZoneId=self.zone_id
+      )
 
 
 class Region(models.Model):

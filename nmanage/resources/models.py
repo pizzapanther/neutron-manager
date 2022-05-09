@@ -7,6 +7,7 @@ from django.db import models
 from django.utils import timezone
 
 import boto3
+from botocore.exceptions import ClientError
 
 from encrypted_model_fields.fields import EncryptedCharField
 
@@ -93,11 +94,18 @@ class Region(models.Model):
     return boto3.client(rtype, **self.client_kwargs)
 
   def get_ec2_infos(self, rids):
-    response = self.client('ec2').describe_instances(InstanceIds=rids)
     ret = {}
-    for rserv in response['Reservations']:
-      for instance in rserv['Instances']:
-        ret[instance['InstanceId']] = instance
+
+    for rid in rids:
+      try:
+        response = self.client('ec2').describe_instances(InstanceIds=[rid])
+
+      except ClientError:
+        continue
+
+      for rserv in response['Reservations']:
+        for instance in rserv['Instances']:
+          ret[instance['InstanceId']] = instance
 
     return ret
 

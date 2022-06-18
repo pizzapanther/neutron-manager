@@ -162,8 +162,8 @@ class Resource(models.Model):
   def uptime(self):
     if self.rtype == 'EC2':
       if hasattr(self, 'api_data'):
-        if r.api_data['State']['Name'] == 'running' and r.api_data['LaunchTime']:
-          tdelta = timezone.now() - r.api_data['LaunchTime']
+        if self.api_data['State']['Name'] == 'running' and self.api_data['LaunchTime']:
+          tdelta = timezone.now() - self.api_data['LaunchTime']
           return tdelta
 
   def execute(self, action):

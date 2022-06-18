@@ -144,16 +144,14 @@ def view_info(request, rid):
   info = {}
   data = resource.get_info()
   for key, value in data.items():
-    if key in ['InstanceId', 'InstanceType', 'PrivateIpAddress', 'PublicIpAddress', 'Uptime', 'State']:
-      if key in ['State']:
-        info[key] = value['Name']
-
-      elif key == 'Uptime':
+    if key in ['InstanceId', 'InstanceType', 'PrivateIpAddress', 'PublicIpAddress', 'State']:
+      if key == 'State':
         launch_time = None
         if data['State']['Name'] == 'running':
           launch_time = data['LaunchTime']
 
-        info[key] = tdelta(resource.uptime(launch_time))
+        info['Uptime'] = tdelta(resource.uptime(launch_time))
+        info[key] = value['Name']
 
       else:
         info[key] = value

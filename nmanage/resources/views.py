@@ -151,7 +151,7 @@ def view_info(request, rid):
       elif key == 'Uptime':
         launch_time = None
         if data['State']['Name'] == 'running':
-          launch_time = = data['LaunchTime']
+          launch_time = data['LaunchTime']
 
         info[key] = tdelta(resource.uptime(launch_time))
 

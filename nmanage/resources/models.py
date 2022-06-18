@@ -158,6 +158,14 @@ class Resource(models.Model):
   def client(self):
     return self.region.client(self.rtype.lower())
 
+  @property
+  def uptime(self):
+    if self.rtype == 'EC2':
+      if hasattr(self, 'api_data'):
+        if r.api_data['State']['Name'] == 'running' and r.api_data['LaunchTime']:
+          tdelta = timezone.now() - r.api_data['LaunchTime']
+          return tdelta
+
   def execute(self, action):
     method = f"{self.rtype.lower()}_{action}"
     return getattr(self, method)()

@@ -31,3 +31,25 @@ def can_schedule(user, resource):
     return True
 
   return False
+
+
+@register.filter
+def tdelta(td):
+  if td:
+    ts = td.total_seconds()
+    day_sec = 24 * 60 * 60
+    hour_sec = 60 * 60
+    min_sec = 60
+
+    days = int(ts / day_sec)
+    ts = ts - days * day_sec
+
+    hrs = int(ts / hour_sec)
+    ts = ts - hrs * hour_sec
+
+    mins = int(ts / min_sec)
+    secs = ts - mins * min_sec
+
+    return f'{days} days {hrs}:{mins}:{secs}'
+
+  return td

@@ -37,7 +37,10 @@
                 Type
               </th>
               <th class="text-left">
-                Public IP
+                IP
+              </th>
+              <th class="text-left">
+                Uptime
               </th>
               <th class="text-left">
                 State
@@ -57,7 +60,15 @@
               <td>{{ r.rtype }}</td>
               <td>{{ r.region }}</td>
               <td>{{ r.api_data.InstanceType|default:"---" }}</td>
-              <td>{{ r.api_data.PublicIpAddress|default:"---" }}</td>
+              <td>
+                {% if r.zone_update == 'PUBLIC' %}
+                {{ r.api_data.PublicIpAddress|default:"---" }}
+                {% else %}
+                {{ r.api_data.PrivateIpAddress|default:"---" }}
+                {% endif %}
+                }
+              </td>
+              <td>{{ r.uptime|tdelta|default:"---" }}</td>
               <td>{{ r.api_data.State.Name|default:"---" }}</td>
               <td class="select">
                 <v-select
@@ -85,6 +96,10 @@
 <style>
   .v-text-field__details {
     display: none;
+  }
+
+  td.scale > div {
+    transform: scale(0.7);
   }
 </style>
 <script>

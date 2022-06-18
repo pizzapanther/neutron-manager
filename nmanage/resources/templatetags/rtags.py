@@ -33,6 +33,13 @@ def can_schedule(user, resource):
   return False
 
 
+def dd(num):
+  if num < 10:
+    return '0{num}'
+
+  return str(num)
+
+
 @register.filter
 def tdelta(td):
   if td:
@@ -48,8 +55,8 @@ def tdelta(td):
     ts = ts - hrs * hour_sec
 
     mins = int(ts / min_sec)
-    secs = ts - mins * min_sec
+    secs = int(ts - mins * min_sec)
 
-    return f'{days} days {hrs}:{mins}:{secs}'
+    return f'{days} days {dd(hrs)}:{dd(mins)}:{dd(secs)}'
 
   return td

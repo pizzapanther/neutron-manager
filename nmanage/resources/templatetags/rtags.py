@@ -35,7 +35,7 @@ def can_schedule(user, resource):
 
 def dd(num):
   if num < 10:
-    return '0{num}'
+    return f'0{num}'
 
   return str(num)
 

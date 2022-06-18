@@ -14,6 +14,7 @@ from social_django.utils import Storage
 
 from nmanage.resources.models import Resource, Permission, SuperPermission, PowerSchedule, rebuild_schedule
 from nmanage.resources.forms import ScheduleForm
+from nmanage.resources.templatetags.rtags import tdelta
 
 
 BACKEND_DISPLAY_NAMES = {
@@ -141,10 +142,18 @@ def view_info(request, rid):
     raise http.Http404
 
   info = {}
-  for key, value in resource.get_info().items():
-    if key in ['InstanceId', 'InstanceType', 'PrivateIpAddress', 'PublicIpAddress', 'State']:
+  data = resource.get_info()
+  for key, value in data.items():
+    if key in ['InstanceId', 'InstanceType', 'PrivateIpAddress', 'PublicIpAddress', 'Uptime', 'State']:
       if key in ['State']:
         info[key] = value['Name']
+
+      elif key == 'Uptime':
+        launch_time = None
+        if data['State']['Name'] == 'running':
+          launch_time = = data['LaunchTime']
+
+        info[key] = tdelta(resource.uptime(launch_time))
 
       else:
         info[key] = value
